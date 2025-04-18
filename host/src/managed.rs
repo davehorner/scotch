@@ -7,12 +7,12 @@ use wasmer::{
 };
 
 #[doc(hidden)]
-pub struct ManagedPtr<T: Encode + Decode, M: MemorySize = Memory32> {
+pub struct ManagedPtr<T: Encode + Decode<()>, M: MemorySize = Memory32> {
     offset: M::Offset,
     _ty: PhantomData<T>,
 }
 
-impl<T: Encode + Decode, M: MemorySize> ManagedPtr<T, M> {
+impl<T: Encode + Decode<()>, M: MemorySize> ManagedPtr<T, M> {
     pub(crate) fn new(offset: M::Offset) -> Self {
         Self {
             offset,
@@ -67,7 +67,7 @@ impl<T: Encode + Decode, M: MemorySize> ManagedPtr<T, M> {
     }
 }
 
-unsafe impl<T: Encode + Decode, M: MemorySize> FromToNativeWasmType for ManagedPtr<T, M>
+unsafe impl<T: Encode + Decode<()>, M: MemorySize> FromToNativeWasmType for ManagedPtr<T, M>
 where
     M::Native: NativeWasmTypeInto,
 {

@@ -7,13 +7,13 @@ use wasmer::{
 };
 
 #[doc(hidden)]
-pub struct EncodedPtr<T: Encode + Decode, M: MemorySize = Memory32> {
+pub struct EncodedPtr<T: Encode + Decode<()>, M: MemorySize = Memory32> {
     offset: M::Offset,
     size: usize,
     _ty: PhantomData<T>,
 }
 
-impl<T: Encode + Decode, M: MemorySize> EncodedPtr<T, M> {
+impl<T: Encode + Decode<()>, M: MemorySize> EncodedPtr<T, M> {
     pub fn to_managed(&self) -> ManagedPtr<T, M> {
         ManagedPtr::new(self.offset)
     }
@@ -111,7 +111,7 @@ impl<T: Encode + Decode, M: MemorySize> EncodedPtr<T, M> {
     }
 }
 
-unsafe impl<T: Encode + Decode, M: MemorySize> FromToNativeWasmType for EncodedPtr<T, M>
+unsafe impl<T: Encode + Decode<()>, M: MemorySize> FromToNativeWasmType for EncodedPtr<T, M>
 where
     M::Native: NativeWasmTypeInto,
 {
@@ -132,7 +132,7 @@ where
     }
 }
 
-impl<T: Encode + Decode, M: MemorySize> Clone for EncodedPtr<T, M> {
+impl<T: Encode + Decode<()>, M: MemorySize> Clone for EncodedPtr<T, M> {
     #[inline]
     fn clone(&self) -> Self {
         Self {
@@ -143,4 +143,4 @@ impl<T: Encode + Decode, M: MemorySize> Clone for EncodedPtr<T, M> {
     }
 }
 
-impl<T: Encode + Decode, M: MemorySize> Copy for EncodedPtr<T, M> {}
+impl<T: Encode + Decode<()>, M: MemorySize> Copy for EncodedPtr<T, M> {}

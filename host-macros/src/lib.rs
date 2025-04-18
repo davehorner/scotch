@@ -148,9 +148,10 @@ pub fn host_function(args: TokenStream, input: TokenStream) -> TokenStream {
             let __instance = __env.data().instance.upgrade().unwrap();
             let __view = __instance.exports.get_memory("memory").expect("Memory is missing").view(&__env);
 
-            let state = &mut __env.data_mut().state;
-
             #(#prelude)*
+            // Drop __view to release its immutable borrow before mutably borrowing __env for state
+            drop(__view);
+            let state = &mut __env.data_mut().state;
             let out = (move || #original_output #block)();
             #epilogue
         }

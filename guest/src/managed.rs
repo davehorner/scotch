@@ -11,13 +11,13 @@ use core::{alloc::Layout, marker::PhantomData, mem::size_of, slice::from_raw_par
 
 #[allow(dead_code)]
 #[doc(hidden)]
-pub struct ManagedPtr<T: Encode + Decode> {
+pub struct ManagedPtr<T: Encode + Decode<()>> {
     offset: MemoryType,
     size: usize,
     _ty: PhantomData<T>,
 }
 
-impl<T: Encode + Decode> ManagedPtr<T> {
+impl<T: Encode + Decode<()>> ManagedPtr<T> {
     #[inline(always)]
     pub fn offset(&self) -> MemoryType {
         self.offset

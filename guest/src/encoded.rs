@@ -4,12 +4,12 @@ use core::{marker::PhantomData, slice::from_raw_parts};
 
 #[repr(transparent)]
 #[doc(hidden)]
-pub struct EncodedPtr<T: Encode + Decode> {
+pub struct EncodedPtr<T: Encode + Decode<()>> {
     offset: MemoryType,
     _ty: PhantomData<T>,
 }
 
-impl<T: Encode + Decode> EncodedPtr<T> {
+impl<T: Encode + Decode<()>> EncodedPtr<T> {
     /// # Safety
     /// Pointer is managed by scotch_host and was not created by other means.
     #[inline]

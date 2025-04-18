@@ -18,7 +18,8 @@ extern "C" {
 #[host_function(i32)]
 fn print(text: &String) {
     *state += 1;
-    println!("Wasm: {text}. Call count: {state}");
+    let count = *state;
+    println!("Wasm: {text}. Call count: {count}");
 }
 
 const RANDOM_NUMBER_CHOSEN_BY_A_FAIR_DICE_ROLL: usize = 2;
