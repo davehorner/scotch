@@ -1,11 +1,12 @@
 [workspace]
-members = ["host", "guest", "host-macros", "guest-macros", "examples/*"]
+members = ["host", "guest", "host-macros", "guest-macros", "examples/*", "scratch-test"]
+exclude = ["cargo-e-ext"]
 
 [workspace.package]
 version = "0.1.0"
 
 [workspace.dependencies]
-wasmer = { version = "3", default-features = false, features = ["sys", "compiler"] }
+wasmer = { version = "3.2.2", default-features = false, features = ["sys", "compiler"] }
 syn = { version = "1", features = ["full"] }
 bincode = "2.0.0-rc.2"
 

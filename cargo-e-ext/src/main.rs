@@ -60,6 +60,28 @@ fn main() -> Result<()> {
     let (plugin_name, plugin, target) = &all_targets[index];
 
     println!("Running target '{}' from plugin '{}'", target.name, plugin_name);
+    // If this is a Rhai script plugin, run in-process via the embedded engine
+    if let Some(src) = plugin.source() {
+        if src.ends_with(".rhai") {
+            // Run Rhai plugin in-process
+            let output = plugin.run(&cwd, target)?;
+            if !output.is_empty() {
+                // First element: exit code
+                let code_str = &output[0];
+                let code = code_str.parse::<i32>().unwrap_or(0);
+                // Display exit code
+                println!("Exited with code: {}", code);
+                // Print remaining output lines
+                for line in &output[1..] {
+                    println!("{}", line);
+                }
+                std::process::exit(code);
+            } else {
+                std::process::exit(0);
+            }
+        }
+    }
+    // For other plugins, build and run via external command
     let mut cmd = plugin.build_command(&cwd, target)?;
     // Special handling for export- and scotch-based plugins (WASM/DLL invocation)
     if plugin_name == "wasm-export" || plugin_name == "dll-export" || plugin_name == "scotch" {

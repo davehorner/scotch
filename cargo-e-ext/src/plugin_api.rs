@@ -60,7 +60,29 @@ pub trait Plugin {
     fn name(&self) -> &str;
     fn matches(&self, dir: &Path) -> bool;
     fn collect_targets(&self, dir: &Path) -> Result<Vec<Target>>;
+    /// Build a system command to execute this target when no in-process entrypoint is provided.
     fn build_command(&self, dir: &Path, target: &Target) -> Result<Command>;
+    /// Run the plugin target, either in-process or by spawning the external command.
+    ///
+    /// Returns a Vec of strings:
+    /// - The first element is the exit code (as a debug-formatted string).
+    /// - Subsequent elements are the debug-formatted output lines from stdout.
+    fn run(&self, dir: &Path, target: &Target) -> Result<Vec<String>> {
+        // Default: spawn the command returned by build_command and capture output.
+        let mut cmd = self.build_command(dir, target)?;
+        let output = cmd.output()?;
+        let mut result = Vec::new();
+        // Exit code, default to 0 if unavailable.
+        let code = output.status.code().unwrap_or(0);
+        // Push exit code as string (no quotes)
+        result.push(code.to_string());
+        // Capture stdout lines and push as-is
+        let stdout = String::from_utf8_lossy(&output.stdout);
+        for line in stdout.lines() {
+            result.push(line.to_string());
+        }
+        Ok(result)
+    }
     /// Optional human-readable source path of the plugin (e.g., .lua script, .wasm file, crate path)
     fn source(&self) -> Option<String> {
         None
