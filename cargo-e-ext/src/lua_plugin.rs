@@ -99,7 +99,7 @@ pub struct CommandSpec {
 
 impl CommandSpec {
     /// Convert the spec into a `std::process::Command`, defaulting to `default_dir` if `cwd` is None
-    fn into_command(self, default_dir: &Path) -> Command {
+    pub fn into_command(self, default_dir: &Path) -> Command {
         let mut cmd = Command::new(self.prog);
         for arg in self.args {
             cmd.arg(arg);

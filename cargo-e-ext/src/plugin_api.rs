@@ -8,6 +8,7 @@ use toml;
 use crate::export_plugin::WasmExportPlugin;
 use std::fs;
 use crate::scotch_plugin::ScotchPlugin;
+use crate::rhai_plugin::RhaiPlugin;
 
 pub use crate::lua_plugin::CommandSpec;
 /// Returns the directories to search for plugins: first the project-local `plugins/`,
@@ -71,7 +72,7 @@ pub fn load_plugins() -> Result<Vec<Box<dyn Plugin>>> {
     // current directory for matches
     let cwd = std::env::current_dir()?;
 
-    // Load Lua plugins from project-local and built-in `plugins/` directories
+    // Load Lua and Rhai script plugins from project-local and built-in `plugins/` directories
     for base in plugin_directories() {
         if !base.is_dir() {
             continue;
@@ -81,6 +82,9 @@ pub fn load_plugins() -> Result<Vec<Box<dyn Plugin>>> {
             if let Some(ext) = path.extension().and_then(|s| s.to_str()) {
                 if ext == "lua" {
                     let plugin = crate::lua_plugin::LuaPlugin::load(&path)?;
+                    plugins.push(Box::new(plugin));
+                } else if ext == "rhai" {
+                    let plugin = RhaiPlugin::load(&path)?;
                     plugins.push(Box::new(plugin));
                 }
             }

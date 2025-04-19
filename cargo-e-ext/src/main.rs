@@ -1,5 +1,6 @@
 mod plugin_api;
 mod lua_plugin;
+mod rhai_plugin;
 mod wasm_plugin;
 mod scotch_plugin;
 mod export_plugin;
